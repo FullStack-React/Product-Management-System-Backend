@@ -1,4 +1,5 @@
 {
+  "env": { "node": true },
   "extends": ["eslint:recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "project": true, "tsconfigRootDir": "./" },
