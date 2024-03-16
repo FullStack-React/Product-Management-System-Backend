@@ -1,4 +1,7 @@
 {
+  "env": {
+    "node": true
+  },
   "name": "backend",
   "version": "1.0.0",
   "description": "",
@@ -9,7 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "type-check": "tsc --noEmit",
-    "prepare": "husky init",
+    "prepare": "husky install",
     "test": "echo \"Temporarily disable test\" && exit 0"
   },
   "keywords": [],
@@ -25,6 +28,8 @@
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.26",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
