@@ -10,6 +10,7 @@ interface UserResponse {
   email: string;
   role: string;
   token: string;
+  numberProductsInCart?: number;
 }
 
 export const loginUser = async (req: Request, res: Response) => {
@@ -30,6 +31,7 @@ export const loginUser = async (req: Request, res: Response) => {
       id: user._id.toString(),
       email: user.email,
       role: user.role,
+      numberProductsInCart: user.numProductsInCart,
       token,
     };
     return res.status(200).json(userWithToken);
