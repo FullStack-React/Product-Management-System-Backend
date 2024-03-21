@@ -27,6 +27,8 @@ const UserSchema = new Schema({
       quantity: { type: Number, required: true },
     },
   ],
+
+  // only for vendors
   ownedProducts: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
 });
 

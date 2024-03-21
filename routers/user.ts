@@ -1,8 +1,21 @@
 import express from 'express';
-import { createUser } from '../controllers/user.ts';
+import {
+  createUser,
+  addAndIncreaseProduct,
+  decreaseProduct,
+  removeProduct,
+  getCart,
+  getCartTotalAndTax,
+} from '../controllers/user.ts';
+import { auth } from '../middlewares/auth.ts';
 
 const router = express.Router();
 
 router.post('/signup', createUser);
+router.post('/add_product', auth, addAndIncreaseProduct);
+router.post('/decrease_product', auth, decreaseProduct);
+router.post('/remove_product', auth, removeProduct);
+router.get('/get_cart', auth, getCart);
+router.get('/get_cart_total_and_tax', auth, getCartTotalAndTax);
 
 export default router;

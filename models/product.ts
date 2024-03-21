@@ -5,7 +5,6 @@ const ProductSchema = new Schema({
   vendor: {
     type: Schema.Types.ObjectId,
     required: true,
-    unique: true,
   },
   name: {
     type: String,
