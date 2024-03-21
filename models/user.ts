@@ -16,6 +16,18 @@ const UserSchema = new Schema({
     required: true,
     enum: ['customer', 'vendor'],
   },
+  numProductsInCart: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  cart: [
+    {
+      product: { type: Schema.Types.ObjectId, ref: 'Product' },
+      quantity: { type: Number, required: true },
+    },
+  ],
+  ownedProducts: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
 });
 
 const User = mongoose.model('User', UserSchema);
