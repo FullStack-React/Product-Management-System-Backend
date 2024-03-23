@@ -12,9 +12,9 @@ import { auth } from '../middlewares/auth.ts';
 const router = express.Router();
 
 router.post('/signup', createUser);
-router.post('/add_product', auth, addAndIncreaseProduct);
-router.post('/decrease_product', auth, decreaseProduct);
-router.post('/remove_product', auth, removeProduct);
+router.post('/add_product/:id', auth, addAndIncreaseProduct);
+router.post('/decrease_product/:id', auth, decreaseProduct);
+router.post('/remove_product/:id', auth, removeProduct);
 router.get('/get_cart', auth, getCart);
 router.get('/get_cart_total_and_tax', auth, getCartTotalAndTax);
 

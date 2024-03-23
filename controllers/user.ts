@@ -39,7 +39,7 @@ export const getCart = async (req: Request, res: Response) => {
 export const addAndIncreaseProduct = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.body.user.id);
-    const product = await Product.findById(req.body.product);
+    const product = await Product.findById(req.params?.id);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -48,12 +48,18 @@ export const addAndIncreaseProduct = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Product not found' });
     }
     const productIn = user.cart.find((item: any) =>
-      item.product.equals(req.body.product),
+      item.product.equals(req.params?.id),
     );
-    if (productIn && productIn.quantity < product.stock) {
-      productIn.quantity += 1;
+
+    console.log(productIn);
+    if (productIn) {
+      if (productIn.quantity === product.stock) {
+        return res.status(400).json({ message: 'Product out of stock' });
+      } else {
+        productIn.quantity += 1;
+      }
     } else {
-      const newInCart = { product: req.body.product, quantity: 1 };
+      const newInCart = { product: req.params.id, quantity: 1 };
       user.cart.push(newInCart);
     }
     user.numProductsInCart += 1;
@@ -68,11 +74,12 @@ export const addAndIncreaseProduct = async (req: Request, res: Response) => {
 export const decreaseProduct = async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.body.user.id);
+    console.log(user);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     const productIn = user.cart.find((item: any) =>
-      item.product.equals(req.body.product),
+      item.product.equals(req.params?.id),
     );
     if (!productIn) {
       return res.status(404).json({ message: 'Product not found' });
@@ -100,13 +107,13 @@ export const removeProduct = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'User not found' });
     }
     const productIn = user.cart.find((item: any) =>
-      item.product.equals(req.body.product),
+      item.product.equals(req.params?.id),
     );
     if (!productIn) {
       return res.status(404).json({ message: 'Product not found' });
     }
     user.numProductsInCart -= productIn.quantity;
-    user.cart.pull({ product: req.body.product });
+    user.cart.pull({ product: req.params?.id });
 
     await user.save();
     res.status(200).json(user.cart);
