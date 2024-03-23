@@ -4,11 +4,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('x-auth-token');
 
   if (!token) {
-    return res.status(401).json({ message: 'Authorization denied' });
+    return res
+      .status(401)
+      .json({ message: 'Authorization denied, please log in' });
   }
 
   try {
@@ -20,4 +22,27 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default auth;
+export const vendorAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const token = req.header('x-auth-token');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authorization denied' });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET || 'test') as {
+      role: string;
+    };
+    if (decoded.role === 'vendor') {
+      req.body.user = decoded;
+      return next();
+    } else {
+      return res.status(401).json({ message: 'Only Vendors Can Do This' });
+    }
+  } catch (err) {
+    return res.status(401).json({ message: 'Authentification Failed' });
+  }
+};

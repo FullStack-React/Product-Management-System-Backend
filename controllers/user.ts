@@ -1,4 +1,5 @@
 import User from '../models/user.ts';
+import Product from '../models/product.ts';
 import type { Request, Response } from 'express';
 
 export const createUser = async (req: Request, res: Response) => {
@@ -18,5 +19,124 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(201).json(user);
   } catch (error: any) {
     res.status(409).json({ message: error.message });
+  }
+};
+
+// get all products in user's cart;
+export const getCart = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id).populate('cart.product');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user.cart);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// add product to user's cart and increase quantity(we only do increase by 1 for now);
+export const addAndIncreaseProduct = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id);
+    const product = await Product.findById(req.params?.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    const productIn = user.cart.find((item: any) =>
+      item.product.equals(req.params?.id),
+    );
+
+    console.log(productIn);
+    if (productIn) {
+      if (productIn.quantity === product.stock) {
+        return res.status(400).json({ message: 'Product out of stock' });
+      } else {
+        productIn.quantity += 1;
+      }
+    } else {
+      const newInCart = { product: req.params.id, quantity: 1 };
+      user.cart.push(newInCart);
+    }
+    user.numProductsInCart += 1;
+    await user.save();
+    res.status(200).json(user.cart);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// decrease product quantity in user's cart;
+export const decreaseProduct = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id);
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const productIn = user.cart.find((item: any) =>
+      item.product.equals(req.params?.id),
+    );
+    if (!productIn) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    if (productIn.quantity > 1) {
+      productIn.quantity -= 1;
+      user.numProductsInCart -= 1;
+    } else {
+      return res
+        .status(400)
+        .json({ message: 'Quantity cannot be less than 1' });
+    }
+    await user.save();
+    res.status(200).json(user.cart);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// remove product
+export const removeProduct = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const productIn = user.cart.find((item: any) =>
+      item.product.equals(req.params?.id),
+    );
+    if (!productIn) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    user.numProductsInCart -= productIn.quantity;
+    user.cart.pull({ product: req.params?.id });
+
+    await user.save();
+    res.status(200).json(user.cart);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get total price and tax of products in user's cart;
+export const getCartTotalAndTax = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id).populate('cart.product');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    let total = 0;
+    user.cart.forEach((item: any) => {
+      total += item.product.price * item.quantity;
+    });
+    const tax = total * 0.08;
+    res.status(200).json({ total, tax });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };
