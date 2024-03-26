@@ -84,12 +84,10 @@ export const addAndIncreaseProduct = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'User cart not found' });
     }
 
-    res
-      .status(200)
-      .json({
-        numProductsInCart: user.numProductsInCart,
-        totalPricesInCart: user.totalPricesInCart,
-      });
+    res.status(200).json({
+      numProductsInCart: user.numProductsInCart,
+      totalPricesInCart: user.totalPricesInCart,
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -130,12 +128,10 @@ export const decreaseProduct = async (req: Request, res: Response) => {
 
     await user.save();
 
-    res
-      .status(200)
-      .json({
-        numProductsInCart: user.numProductsInCart,
-        totalPricesInCart: user.totalPricesInCart,
-      });
+    res.status(200).json({
+      numProductsInCart: user.numProductsInCart,
+      totalPricesInCart: user.totalPricesInCart,
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -175,12 +171,10 @@ export const removeProduct = async (req: Request, res: Response) => {
     } else {
       return res.status(404).json({ message: 'User cart not found' });
     }
-    res
-      .status(200)
-      .json({
-        numProductsInCart: user.numProductsInCart,
-        totalPricesInCart: user.totalPricesInCart,
-      });
+    res.status(200).json({
+      numProductsInCart: user.numProductsInCart,
+      totalPricesInCart: user.totalPricesInCart,
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
