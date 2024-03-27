@@ -35,6 +35,19 @@ export const getCart = async (req: Request, res: Response) => {
   }
 };
 
+// get cart basic info;
+export const getCartBasicInfo = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.body.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user.cart);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // add product to user's cart and increase quantity(we only do increase by 1 for now);
 export const addAndIncreaseProduct = async (req: Request, res: Response) => {
   try {
