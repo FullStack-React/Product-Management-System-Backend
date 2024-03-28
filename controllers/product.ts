@@ -2,6 +2,8 @@ import Product from '../models/product.ts';
 import User from '../models/user.ts';
 import type { Request, Response } from 'express';
 
+const Order = ['-updatedAt', '-price', 'price'];
+
 export const createProduct = async (req: Request, res: Response) => {
   try {
     // Create new product
@@ -41,8 +43,69 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductCount = async (req: Request, res: Response) => {
+  try {
+    const count = await Product.countDocuments();
+    res.status(200).json({ success: true, count });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
+export const getVendorProductCount = async (req: Request, res: Response) => {
+  try {
+    const count = await Product.countDocuments({ vendor: req.body.user.id });
+    res.status(200).json({ success: true, count });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
+const getPagedProducts = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const order = Order[parseInt(req.query.sort as string)];
+
+    const startIndex = (page - 1) * limit;
+
+    const results = await Product.find()
+      .sort(order)
+      .skip(startIndex)
+      .limit(limit);
+    res.status(200).json({ success: true, results });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
+const getPagedVendorProducts = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string);
+    const limit = parseInt(req.query.limit as string);
+    const order = Order[parseInt(req.query.sort as string)];
+
+    const startIndex = (page - 1) * limit;
+
+    const results = await Product.find({ vendor: req.body.user.id })
+      .sort(order)
+      .skip(startIndex)
+      .limit(limit);
+    res.status(200).json({ success: true, results });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
+
 // get products list;
 export const getProducts = async (req: Request, res: Response) => {
+  if (req.query.page && req.query.limit) {
+    return getPagedProducts(req, res);
+  }
   try {
     const products = await Product.find();
     res.status(200).json({ success: true, products });
@@ -53,6 +116,9 @@ export const getProducts = async (req: Request, res: Response) => {
 };
 // get all products owned by a specific vendor;
 export const getVendorProducts = async (req: Request, res: Response) => {
+  if (req.query.page && req.query.limit) {
+    return getPagedVendorProducts(req, res);
+  }
   try {
     const user = await User.findById(req.body.user.id);
     if (!user) {
