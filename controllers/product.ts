@@ -90,7 +90,7 @@ const getPagedVendorProducts = async (req: Request, res: Response) => {
 
     const startIndex = (page - 1) * limit;
 
-    const results = await Product.find({ vendor: req.body.user.id })
+    const results = await Product.find()
       .sort(order)
       .skip(startIndex)
       .limit(limit);
