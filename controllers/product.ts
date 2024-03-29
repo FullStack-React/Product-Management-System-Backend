@@ -9,6 +9,7 @@ export const createProduct = async (req: Request, res: Response) => {
     // Create new product
     // vendor ID get from decoding jwt
     req.body.vendor = req.body.user.id;
+    console.log(req.body);
     const product = new Product(req.body);
     await product.save();
 
@@ -31,6 +32,7 @@ export const createProduct = async (req: Request, res: Response) => {
 export const getProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
+    console.log(product);
     if (!product) {
       return res
         .status(404)
@@ -140,3 +142,23 @@ export const getVendorProducts = async (req: Request, res: Response) => {
 };
 
 // update product by id;
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    if (req.body.vendor !== req.body.user.id) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Unauthorized access' });
+    }
+    req.body.updatedAt = Date.now();
+    const product = await Product.findByIdAndUpdate(req.body._id, req.body);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Product not found' });
+    }
+    res.status(200).json({ success: true, message: 'Product updated' });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+};
