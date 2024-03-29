@@ -9,7 +9,12 @@ export const createProduct = async (req: Request, res: Response) => {
     // Create new product
     // vendor ID get from decoding jwt
     req.body.vendor = req.body.user.id;
-    console.log(req.body);
+    // console.log(req.body);
+    if (req.body.stock < 1 || req.body.price < 1) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Stock must be greater than 0' });
+    }
     const product = new Product(req.body);
     await product.save();
 
@@ -32,7 +37,7 @@ export const createProduct = async (req: Request, res: Response) => {
 export const getProduct = async (req: Request, res: Response) => {
   try {
     const product = await Product.findById(req.params.id);
-    console.log(product);
+    // console.log(product);
     if (!product) {
       return res
         .status(404)
@@ -144,6 +149,11 @@ export const getVendorProducts = async (req: Request, res: Response) => {
 // update product by id;
 export const updateProduct = async (req: Request, res: Response) => {
   try {
+    if (req.body.stock < 1 || req.body.price < 1) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Stock must be greater than 0' });
+    }
     if (req.body.vendor !== req.body.user.id) {
       return res
         .status(401)

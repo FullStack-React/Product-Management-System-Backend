@@ -16,6 +16,7 @@ const ProductSchema = new Schema({
   price: {
     type: Number,
     required: true,
+    min: [0, 'price must be greater than 0'],
   },
   category: {
     type: String,
@@ -28,6 +29,7 @@ const ProductSchema = new Schema({
   stock: {
     type: Number,
     required: true,
+    min: [0, 'Stock must be greater than 0'],
   },
   updatedAt: {
     type: Date,
