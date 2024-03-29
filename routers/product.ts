@@ -6,6 +6,7 @@ import {
   getProduct,
   getProducts,
   getVendorProducts,
+  updateProduct,
 } from '../controllers/product.ts';
 import { vendorAuth } from '../middlewares/auth.ts';
 
@@ -18,4 +19,5 @@ router.get('/get_products', getProducts);
 router.get('/get_vendor_products/', vendorAuth, getVendorProducts);
 router.get('/get_products_count', getProductCount);
 router.get('/get_vendor_products_count/', vendorAuth, getVendorProductCount);
+router.post('/update_product', vendorAuth, updateProduct);
 export default router;
